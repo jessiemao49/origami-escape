@@ -14,6 +14,10 @@ public class PVertex : MonoBehaviour {
 	public void move(Vector3 xyz) {
 		pos = xyz;
 	}
+
+	public Vector3 getPos() {
+		return pos;
+	}
 	
 	public void addNeighbor(PEdge n) {
 		neighbors.Add (n);
@@ -23,5 +27,8 @@ public class PVertex : MonoBehaviour {
 		neighbors.Remove (n);
 	}
 
+	public System.Collections.Generic.List<PEdge> getNeighbors() {
+		return neighbors;
+	}
 
 }

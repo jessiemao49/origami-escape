@@ -13,6 +13,8 @@ public class PFace : MonoBehaviour {
 		verts.Add (v);
 	}
 
-
+	public System.Collections.Generic.List<PVertex> getVerts() {
+		return verts;
+	}
 
 }

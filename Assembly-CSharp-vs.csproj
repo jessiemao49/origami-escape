@@ -46,11 +46,11 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\PEdge.cs" />
-     <Compile Include="Assets\Scripts\PFace.cs" />
-     <Compile Include="Assets\Scripts\PVertex.cs" />
-     <Compile Include="Assets\Scripts\PaperFold.cs" />
-     <Compile Include="Assets\Scripts\Triangulator.cs" />
+     <Compile Include="Assets\scripts\PEdge.cs" />
+     <Compile Include="Assets\scripts\PFace.cs" />
+     <Compile Include="Assets\scripts\PVertex.cs" />
+     <Compile Include="Assets\scripts\PaperFold.cs" />
+     <Compile Include="Assets\scripts\Triangulator.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>
