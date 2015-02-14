@@ -9,7 +9,7 @@ public class PEdge : MonoBehaviour {
 	private PVertex p0;
 	private PVertex p1;
 
-	public PEdge (ref PVertex point0, ref PVertex point1) {
+	public PEdge (PVertex point0, PVertex point1) {
 		p0 = point0;
 		p1 = point1;
 	}

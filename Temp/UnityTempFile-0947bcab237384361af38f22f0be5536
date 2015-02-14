@@ -41,10 +41,12 @@
 -define:ENABLE_PROFILER
 -define:UNITY_EDITOR
 -define:UNITY_EDITOR_OSX
-'Assets/Scripts/PEdge.cs'
-'Assets/Scripts/PFace.cs'
-'Assets/Scripts/PVertex.cs'
-'Assets/Scripts/PaperFold.cs'
-'Assets/Scripts/Triangulator.cs'
+'Assets/scripts/MeshDeform.cs'
+'Assets/scripts/PEdge.cs'
+'Assets/scripts/PFace.cs'
+'Assets/scripts/PVertex.cs'
+'Assets/scripts/Paper.cs'
+'Assets/scripts/PaperFold.cs'
+'Assets/scripts/Triangulator.cs'
 -r:'/Applications/Unity/Unity.app/Contents/Frameworks/Mono/lib/mono/unity/System.Runtime.Serialization.dll'
 -r:'/Applications/Unity/Unity.app/Contents/Frameworks/Mono/lib/mono/unity/System.Xml.Linq.dll'
