@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Paper : MonoBehaviour {
-	private Mesh mesh;
+	private MeshFilter filter;
 	private System.Collections.Generic.List<PEdge> edges;
 	private System.Collections.Generic.List<PVertex> verts;
 	private System.Collections.Generic.List<PFace> faces;
@@ -11,9 +11,17 @@ public class Paper : MonoBehaviour {
 		verts = new System.Collections.Generic.List<PVertex> ();
 		edges = new System.Collections.Generic.List<PEdge> ();
 		faces = new System.Collections.Generic.List<PFace> ();
+		// Set up game object with mesh;
+		gameObject.AddComponent(typeof(MeshRenderer));
+		filter = gameObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
 
-		createShape ();
+		createSquare ();
 		triangulateFaces ();
+	}
+
+	void Update () {
+		drawMeshOutline ();
+
 	}
 
 	void createSquare() {
@@ -118,15 +126,22 @@ public class Paper : MonoBehaviour {
 		msh.RecalculateNormals();
 		msh.RecalculateBounds();
 		
-		// Set up game object with mesh;
-		gameObject.AddComponent(typeof(MeshRenderer));
-		MeshFilter filter = gameObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
 		filter.mesh = msh;
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	// Draws the triangles of mesh for debugging purposes
+	void drawMeshOutline() {
+		int[] triangles = filter.mesh.GetTriangles (0);
+		for (int i = 0 ; i < triangles.Length / 3; i++) {
+			Vector3 p1 = filter.mesh.vertices[triangles[i*3 + 1]];
+			Vector3 p0 = filter.mesh.vertices[triangles[i*3 + 0]];
+			Vector3 p2 = filter.mesh.vertices[triangles[i*3 + 2]];
+
+			Debug.DrawLine(p0, p1);
+			Debug.DrawLine(p1, p2);
+			Debug.DrawLine(p2, p0);
+		}
+
 	}
 }
