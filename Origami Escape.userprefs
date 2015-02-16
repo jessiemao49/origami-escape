@@ -1,12 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/Paper.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/PFace.cs">
     <Files>
-      <File FileName="Assets/Scripts/PVertex.cs" Line="22" Column="36" />
-      <File FileName="Assets/scripts/Paper.cs" Line="24" Column="1" />
-      <File FileName="Assets/scripts/PEdge.cs" Line="18" Column="13" />
-      <File FileName="Assets/scripts/PFace.cs" Line="1" Column="1" />
-      <File FileName="Assets/scripts/MeshDeform.cs" Line="22" Column="24" />
+      <File FileName="Assets/Scripts/PVertex.cs" Line="16" Column="1" />
+      <File FileName="Assets/scripts/Paper.cs" Line="73" Column="59" />
+      <File FileName="Assets/scripts/PEdge.cs" Line="26" Column="36" />
+      <File FileName="Assets/scripts/PFace.cs" Line="73" Column="12" />
+      <File FileName="Assets/scripts/Fold.cs" Line="39" Column="50" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

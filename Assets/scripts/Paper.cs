@@ -29,10 +29,10 @@ public class Paper : MonoBehaviour {
 		edges.Clear ();
 		faces.Clear ();
 
-		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, 1.0f)));
-		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, -1.0f)));
-		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, -1.0f)));
-		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, 1.0f)));
+		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, 1.0f), 0));
+		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, -1.0f), 1));
+		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, -1.0f), 2));
+		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, 1.0f), 3));
 		
 		edges.Add (new PEdge (verts [0], verts [1]));
 		edges.Add (new PEdge (verts [1], verts [2]));
@@ -53,6 +53,11 @@ public class Paper : MonoBehaviour {
 		faces [0].addVert (verts [1]);
 		faces [0].addVert (verts [2]);
 		faces [0].addVert (verts [3]);	
+
+		faces [0].addEdge (edges [0]);
+		faces [0].addEdge (edges [1]);
+		faces [0].addEdge (edges [2]);
+		faces [0].addEdge (edges [3]);
 	}
 	
 	// For testing purposes	
@@ -61,11 +66,11 @@ public class Paper : MonoBehaviour {
 		edges.Clear ();
 		faces.Clear ();
 		
-		verts.Add(new PVertex (new Vector3 (2.0f, 0.0f, 1.0f)));
-		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, -0.5f)));
-		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, -1.0f)));
-		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, 1.2f)));
-		verts.Add(new PVertex (new Vector3 (0.4f, 0.0f, 0.9f)));
+		verts.Add(new PVertex (new Vector3 (2.0f, 0.0f, 1.0f), 0));
+		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, -0.5f), 1));
+		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, -1.0f), 2));
+		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, 1.2f), 3));
+		verts.Add(new PVertex (new Vector3 (0.4f, 0.0f, 0.9f), 4));
 
 		edges.Add (new PEdge (verts [0], verts [1]));
 		edges.Add (new PEdge (verts [1], verts [2]));
@@ -92,7 +97,7 @@ public class Paper : MonoBehaviour {
 		faces [0].addVert (verts [4]);	
 	}
 
-	void triangulateFaces() {
+	public void triangulateFaces() {
 		Mesh msh = new Mesh();
 		System.Collections.Generic.List<int> meshIDs = new System.Collections.Generic.List<int> ();
 		System.Collections.Generic.List<Vector3> meshVerts = new System.Collections.Generic.List<Vector3> ();
@@ -144,4 +149,9 @@ public class Paper : MonoBehaviour {
 		}
 
 	}
+
+	public System.Collections.Generic.List<PEdge> getEdges() { return edges; }
+	public System.Collections.Generic.List<PVertex> getVerts() { return verts; }
+	public System.Collections.Generic.List<PFace> getFaces() { return faces; }
+
 }

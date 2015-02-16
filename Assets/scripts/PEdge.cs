@@ -22,10 +22,18 @@ public class PEdge : MonoBehaviour {
 		return p1;
 	}
 
-	public PVertex getOther(ref PVertex me) {
-		return p0 == me ? p1 : p0;
+	public PVertex getOther(PVertex me) {
+		return p0.getID () == me.getID () ? p1 : p0;
 	}
-	
+
+	public void setP0(PVertex newp) {
+		p0 = newp;
+	}
+
+	public void setP1(PVertex newp) {
+		p1 = newp;
+	}
+
 	public void setOther(ref PVertex me, ref PVertex newYou) {
 		if (p0 == me) {
 			p1 = newYou;

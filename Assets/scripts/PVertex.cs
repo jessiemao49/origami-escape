@@ -4,12 +4,15 @@ using System.Collections;
 public class PVertex : MonoBehaviour {
 
 	private Vector3 pos;
+	private int id;
 	private System.Collections.Generic.List<PEdge> neighbors;
 	
-	public PVertex (Vector3 xyz) {
+	public PVertex (Vector3 xyz, int ID) {
 		pos = xyz;
+		id = ID;
 		neighbors = new System.Collections.Generic.List<PEdge>();
 	}
+
 
 	public void move(Vector3 xyz) {
 		pos = xyz;
@@ -29,6 +32,10 @@ public class PVertex : MonoBehaviour {
 
 	public System.Collections.Generic.List<PEdge> getNeighbors() {
 		return neighbors;
+	}
+
+	public int getID() {
+		return id;
 	}
 
 }
