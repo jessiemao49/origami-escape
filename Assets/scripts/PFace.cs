@@ -12,7 +12,41 @@ public class PFace : MonoBehaviour {
 	}
 
 	public void addVert(PVertex v) { verts.Add (v); }
+
+	public void addVertBetween(PVertex v, PVertex a, PVertex b) {
+		int x = verts.IndexOf (a);
+		int y = verts.IndexOf (b);
+		if (x < y) {
+			verts.Insert (x+1, v);
+		} else {
+			verts.Insert (y+1, v);
+		}
+	}
+
 	public void addEdge(PEdge e) { edges.Add (e); }
+	// For some reason neighbors.remove(e) does some weird shit o ____ o
+	public void removeEdge(PEdge e) {
+		int count = 0;
+		foreach (PEdge edge in edges) {
+			if (edge.equals (e)) {
+				edges.RemoveAt (count);
+				break;
+			}
+			count++;
+		}
+	}
+	// For some reason neighbors.remove(e) does some weird shit o ____ o
+	public void removeVert(PVertex v) {
+		int count = 0;
+		foreach (PVertex vt in verts) {
+			if (v.getID () == vt.getID ()) {
+				verts.RemoveAt (count);
+				break;
+			}
+			count++;
+		}
+	}
+
 
 	public System.Collections.Generic.List<PVertex> getVerts() {
 		return verts;
@@ -45,32 +79,24 @@ public class PFace : MonoBehaviour {
 		System.Collections.Generic.List<PVertex> newVerts = new System.Collections.Generic.List<PVertex> ();
 		System.Collections.Generic.List<PEdge> newEdges = new System.Collections.Generic.List<PEdge> ();
 		newVerts.Add (v0);
-//		return null;
-		int i = 0;
-		while (/*curr.getID () != v1.getID () || */i < 6) {
-			Debug.Log ("while loop");
+		while (curr.getID () != v1.getID ()) {
 			foreach (PEdge e in curr.getNeighbors ()) {
 				PVertex v = e.getOther (curr);
 				if (v.getID () != prev.getID ()) {
-//					Debug.Break ();
 					prev = curr;
 					curr = v;
-					Debug.Log ("Curr: " + curr.getID ());
-					Debug.Log ("Prev: " + prev.getID ());
-					Debug.Log ("V1: " + v1.getID ());
-					//
-//					newVerts.Add (v);
-//					newEdges.Add (e);
-//					Debug.Log ("HWLOWLW");
-//					if (v.getID () != v1.getID ()) {
-//						Debug.Log ("HI ITS ME ");
-//						verts.Remove(v);
-//					}
-//					edges.Remove (e);
+//					Debug.Log ("Curr: " + curr.getID ());
+//					Debug.Log ("Prev: " + prev.getID ());
+//					Debug.Log ("V1: " + v1.getID ());
+					newVerts.Add (v);
+					newEdges.Add (e);
+					if (v.getID () != v1.getID ()) {
+						removeVert (v);
+					}
+					removeEdge (e);
 					break;
 				}
 			}
-			i++;
 		}
 		// v0     v1 -- c -- v0
 		edges.Add (newEdge);
@@ -81,7 +107,7 @@ public class PFace : MonoBehaviour {
 		PFace newFace = new PFace ();
 		newFace.verts = newVerts;
 		newFace.edges = newEdges;
-		
+
 		return newFace;
 	}
 

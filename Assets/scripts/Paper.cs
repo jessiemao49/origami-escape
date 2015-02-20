@@ -15,7 +15,7 @@ public class Paper : MonoBehaviour {
 		gameObject.AddComponent(typeof(MeshRenderer));
 		filter = gameObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
 
-		createSquare ();
+		createShape2 ();
 		triangulateFaces ();
 	}
 
@@ -42,11 +42,11 @@ public class Paper : MonoBehaviour {
 		verts [0].addNeighbor (edges [0]);
 		verts [0].addNeighbor (edges [3]);
 		verts [1].addNeighbor (edges [0]);
-		verts [1].addNeighbor (edges [2]);
-		verts [2].addNeighbor (edges [3]);
+		verts [1].addNeighbor (edges [1]);
 		verts [2].addNeighbor (edges [1]);
+		verts [2].addNeighbor (edges [2]);
 		verts [3].addNeighbor (edges [2]);
-		verts [3].addNeighbor (edges [0]);
+		verts [3].addNeighbor (edges [3]);
 		
 		faces.Add (new PFace ());
 		faces [0].addVert (verts [0]);
@@ -96,11 +96,60 @@ public class Paper : MonoBehaviour {
 		faces [0].addVert (verts [3]);	
 		faces [0].addVert (verts [4]);	
 	}
+	
+	void createShape2() {
+		verts.Clear ();
+		edges.Clear ();
+		faces.Clear ();
+		
+		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, 1.0f), 0));
+		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, -1.0f), 1));
+		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, -1.0f), 2));
+		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, 1.0f), 3));
+		
+		edges.Add (new PEdge (verts [0], verts [1]));
+		edges.Add (new PEdge (verts [1], verts [2]));
+		edges.Add (new PEdge (verts [2], verts [3]));
+		edges.Add (new PEdge (verts [3], verts [0]));
+		
+		verts [0].addNeighbor (edges [0]);
+		verts [0].addNeighbor (edges [3]);
+		verts [1].addNeighbor (edges [0]);
+		verts [1].addNeighbor (edges [1]);
+		verts [2].addNeighbor (edges [1]);
+		verts [2].addNeighbor (edges [2]);
+		verts [3].addNeighbor (edges [2]);
+		verts [3].addNeighbor (edges [3]);
+		
+		faces.Add (new PFace ());
+		faces [0].addVert (verts [0]);
+		faces [0].addVert (verts [1]);
+		faces [0].addVert (verts [2]);
+		faces [0].addVert (verts [3]);	
+		
+		faces [0].addEdge (edges [0]);
+		faces [0].addEdge (edges [1]);
+		faces [0].addEdge (edges [2]);
+		faces [0].addEdge (edges [3]);
+	}
 
 	public void triangulateFaces() {
 		Mesh msh = new Mesh();
 		System.Collections.Generic.List<int> meshIDs = new System.Collections.Generic.List<int> ();
 		System.Collections.Generic.List<Vector3> meshVerts = new System.Collections.Generic.List<Vector3> ();
+
+		int j = 0;
+		foreach(PFace face in faces) {
+			Debug.Log ("Face: " + j++);
+			Debug.Log ("FACE VERTS:");
+			foreach (PVertex v in face.getVerts()) {
+				Debug.Log ("vertex " + v.getID () + ": " + v.getPos ());
+			}
+			Debug.Log ("FACE EDGES:");
+			foreach (PEdge e in face.getEdges()) {
+				Debug.Log (e.getP0 ().getID () + "--" + e.getP1 ().getID ());
+			}
+		}
 
 		for (int x = 0; x < faces.Count; x++) {
 			PFace f = faces[x];
@@ -147,11 +196,12 @@ public class Paper : MonoBehaviour {
 			Debug.DrawLine(p1, p2);
 			Debug.DrawLine(p2, p0);
 		}
-
 	}
 
 	public System.Collections.Generic.List<PEdge> getEdges() { return edges; }
 	public System.Collections.Generic.List<PVertex> getVerts() { return verts; }
 	public System.Collections.Generic.List<PFace> getFaces() { return faces; }
+
+	public void addFace(PFace f) { faces.Add (f); }
 
 }

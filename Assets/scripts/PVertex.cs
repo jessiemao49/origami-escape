@@ -25,9 +25,28 @@ public class PVertex : MonoBehaviour {
 	public void addNeighbor(PEdge n) {
 		neighbors.Add (n);
 	}
+	
+	// For some reason neighbors.remove(e) does some weird shit o ____ o
+	public void removeNeighbor(PEdge e) {
+		int count = 0;
+		foreach (PEdge edge in neighbors) {
+			if (edge.getOther (this).getID () == e.getOther (this).getID ()) {
+				neighbors.RemoveAt (count);
+				break;
+			}
+			count++;
+		}
+	}
 
-	public void removeNeighbor(PEdge n) {
-		neighbors.Remove (n);
+	public void removeNeighbor(PVertex v) {
+		int count = 0;
+		foreach (PEdge e in neighbors) {
+			if (e.getOther (this).getID () == v.getID ()) {
+				neighbors.RemoveAt (count);
+				break;
+			}
+			count++;
+		}
 	}
 
 	public System.Collections.Generic.List<PEdge> getNeighbors() {

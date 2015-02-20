@@ -36,7 +36,7 @@ public class Fold : MonoBehaviour {
 
 			// Find edge that intersects with fold line
 			System.Collections.Generic.List<PFace> faces = paper.getFaces();
-			foreach (PFace f in faces) {
+			foreach (PFace f in faces.ToArray()) {
 
 				System.Collections.Generic.List<PVertex> newVerts = new System.Collections.Generic.List<PVertex>();
 				foreach (PEdge e in f.getEdges().ToArray()) {
@@ -48,44 +48,78 @@ public class Fold : MonoBehaviour {
 						// p0 ----- v ------- p1
 						//      e       e2
 
-						PVertex v = new PVertex(intersection, f.getVerts().Count);
-						PEdge e2 = new PEdge(v, e.getP1());
-//						Debug.Log("NEW EDGE: " + e2.getP0 ().getID () + ", " + e2.getP1().getID ());
-
 						PVertex p0 = e.getP0 ();
 						PVertex p1 = e.getP1 ();
+						PVertex v = new PVertex(intersection, f.getVerts().Count);
 
-						e.setP1(v);
-//						Debug.Log("OLD EDGE: " + e.getP0 ().getID () + ", " + e.getP1().getID ());
-						p0.addNeighbor (e);
-						v.addNeighbor(e);
+//						Debug.Log ("P0: " + p0.getID() + " NEIGHBORS");
+//						foreach(PEdge neighbor in p0.getNeighbors()) {
+//							Debug.Log (">>" + neighbor.getP0().getID () + " -- " + neighbor.getP1 ().getID());
+//						}
+
+						PEdge e1 = new PEdge(v, e.getP0 ());
+						PEdge e2 = new PEdge(v, e.getP1());
+
+//						Debug.Log ("edge: " + e.getP0 ().getID () + " -- " + e.getP1 ().getID ());
+
+						p0.removeNeighbor (e);
+						p0.addNeighbor (e1);
+						v.addNeighbor(e1);
 						v.addNeighbor(e2);
 						p1.removeNeighbor(e);
 						p1.addNeighbor (e2);
 
-						f.addVert (v);
+//						Debug.Log ("P0: " + p0.getID() + " NEIGHBORS");
+//						foreach(PEdge neighbor in p0.getNeighbors()) {
+//							Debug.Log (">>" + neighbor.getP0().getID () + " -- " + neighbor.getP1 ().getID());
+//						}
+//						Debug.Log ("P1 " + p1.getID() + " NEIGHBORS");
+//						foreach(PEdge neighbor in p1.getNeighbors()) {
+//							Debug.Log (">>" + neighbor.getP0().getID () + " -- " + neighbor.getP1 ().getID());
+//						}
+						// Maintain the order of the vertices
+						f.addVertBetween(v, p0, p1);
+						f.addEdge (e1);
+						f.addEdge (e2);
+						f.removeEdge (e);
 
 						// Add new vert and edge
 						paper.getVerts().Add (v);
+						paper.getEdges().Add(e1);
 						paper.getEdges().Add(e2);
+						// TODO REMOVE EDGE PROPERLY 
+//						paper.removeEdge(e);
 
 						newVerts.Add(v);
 					}
 				}
 
-				foreach (PVertex v in f.getVerts()) {
-					Debug.Log ("Vert " + v.getID() + ": " + v.getPos ());
-					foreach(PEdge e in v.getNeighbors()) {
-						Debug.Log ("-- " + e.getOther (v).getID ());
-					}
-				}
+//				foreach (PVertex v in f.getVerts()) {
+//					Debug.Log ("Vert " + v.getID() + ": " + v.getPos ());
+//					foreach(PEdge e in v.getNeighbors()) {
+//						Debug.Log ("-- " + e.getOther (v).getID ());
+//					}
+//				}
 //				foreach (PEdge e in f.getEdges ()) {
-//					Debug.Log("Edge: " + e.getP0().getID() + ", " + e.getP1 ().getID ());
+//					Debug.Log("Edge: " + e.getP0().getID() + " -- " + e.getP1 ().getID ());
 //				}
 
 				// SPLIT face down the newVerts
 				if (newVerts.Count > 0) {
 					PFace newFace = f.split(newVerts[0], newVerts[1]);
+					paper.addFace (newFace);
+
+//					foreach(PFace face in faces) {
+//						Debug.Log ("FACE VERTS:");
+//						foreach (PVertex v in face.getVerts()) {
+//							Debug.Log ("vertex " + v.getID () + ": " + v.getPos ());
+//						}
+//						Debug.Log ("FACE EDGES:");
+//						foreach (PEdge e in face.getEdges()) {
+//							Debug.Log (e.getP0 ().getID () + "--" + e.getP1 ().getID ());
+//						}
+//					}
+
 					paper.triangulateFaces();
 				}
 			}
