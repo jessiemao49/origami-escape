@@ -1,16 +1,27 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/Fold.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/PFace.cs">
     <Files>
-      <File FileName="Assets/Scripts/PVertex.cs" Line="41" Column="1" />
-      <File FileName="Assets/scripts/Paper.cs" Line="42" Column="37" />
-      <File FileName="Assets/scripts/PEdge.cs" Line="35" Column="3" />
-      <File FileName="Assets/scripts/PFace.cs" Line="24" Column="1" />
-      <File FileName="Assets/scripts/Fold.cs" Line="94" Column="7" />
+      <File FileName="Assets/scripts/Paper.cs" Line="143" Column="3" />
+      <File FileName="Assets/Scripts/PVertex.cs" Line="38" Column="27" />
+      <File FileName="Assets/scripts/PFace.cs" Line="156" Column="1" />
+      <File FileName="Assets/scripts/Fold.cs" Line="117" Column="6" />
+      <File FileName="Assets/scripts/PEdge.cs" Line="42" Column="62" />
     </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>v0.getID()</Value>
+          <Value>v1.getID()</Value>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/jessiemao/Documents/PENN/2015-01/Senior Design/Origami Escape/Assets/scripts/PFace.cs" line="170" />
+      <Breakpoint file="/Users/jessiemao/Documents/PENN/2015-01/Senior Design/Origami Escape/Assets/scripts/PFace.cs" line="156" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

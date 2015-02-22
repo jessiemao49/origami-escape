@@ -2,63 +2,146 @@
 using System.Collections;
 
 public class PFace : MonoBehaviour {
-
-	public System.Collections.Generic.List<PVertex> verts;
-	public System.Collections.Generic.List<PEdge> edges;
+	// Linkedlist of verts and edges maintains order going around the face
+	private System.Collections.Generic.LinkedList<PVertex> verts;
+	private System.Collections.Generic.LinkedList<PEdge> edges;
 
 	public PFace() {
-		verts = new System.Collections.Generic.List<PVertex> ();
-		edges = new System.Collections.Generic.List<PEdge> ();
+		verts = new System.Collections.Generic.LinkedList<PVertex> ();
+		edges = new System.Collections.Generic.LinkedList<PEdge> ();
 	}
 
-	public void addVert(PVertex v) { verts.Add (v); }
+	public System.Collections.Generic.LinkedList<PVertex> getVerts() { return verts; }
+	public System.Collections.Generic.LinkedList<PEdge> getEdges() { return edges; }
+	public int getNumVerts() { return verts.Count; }
 
-	public void addVertBetween(PVertex v, PVertex a, PVertex b) {
-		int x = verts.IndexOf (a);
-		int y = verts.IndexOf (b);
-		if (x < y) {
-			verts.Insert (x+1, v);
-		} else {
-			verts.Insert (y+1, v);
+	public PEdge[] getEdgesArray() {
+		System.Collections.Generic.List<PEdge> ret = new System.Collections.Generic.List<PEdge>();
+		foreach (PEdge e in edges) {
+			ret.Add (e);
+		}
+		return ret.ToArray ();
+	}
+
+	public void setVerts(System.Collections.Generic.LinkedList<PVertex> v) { verts = v; }	
+	public void setEdges(System.Collections.Generic.LinkedList<PEdge> e) { edges = e; }
+
+	public void addVert(PVertex v) { verts.AddLast (v); }
+	public void addEdge(PEdge e) { edges.AddLast (e); }
+
+	public void addVertAfter(PVertex node, PVertex newNode) {
+		System.Collections.Generic.LinkedListNode<PVertex> curr = verts.First;
+		while (curr != null) {
+			if (curr.Value.getID() == node.getID()){
+				verts.AddAfter(curr, newNode);
+				return;
+			}
+			curr = curr.Next;
+		}
+	}
+	
+	public void addVertBefore(PVertex node, PVertex newNode) {
+		System.Collections.Generic.LinkedListNode<PVertex> curr = verts.First;
+		while (curr != null) {
+			if (curr.Value.getID() == node.getID()){
+				verts.AddBefore(curr, newNode);
+				return;
+			}
+			curr = curr.Next;
+		}
+	}
+	public void addEdgeAfter(PEdge node, PEdge newNode) {
+		System.Collections.Generic.LinkedListNode<PEdge> curr = edges.First;
+		while (curr != null) {
+			if (curr.Value.Equals (node)){
+				edges.AddAfter(curr, newNode);
+				return;
+			}
+			curr = curr.Next;
+		}
+	}
+	
+	public void addEdgeBefore(PEdge node, PEdge newNode) {
+		System.Collections.Generic.LinkedListNode<PEdge> curr = edges.First;
+		while (curr != null) {
+			if (curr.Value.Equals (node)){
+				edges.AddBefore(curr, newNode);
+				return;
+			}
+			curr = curr.Next;
 		}
 	}
 
-	public void addEdge(PEdge e) { edges.Add (e); }
-	// For some reason neighbors.remove(e) does some weird shit o ____ o
 	public void removeEdge(PEdge e) {
-		int count = 0;
-		foreach (PEdge edge in edges) {
-			if (edge.equals (e)) {
-				edges.RemoveAt (count);
-				break;
+		System.Collections.Generic.LinkedListNode<PEdge> curr = edges.First;						
+		while (curr != null) {
+			PEdge d = curr.Value;
+			if (e.Equals (d)) {
+				edges.Remove (curr);
+				return;
 			}
-			count++;
-		}
-	}
-	// For some reason neighbors.remove(e) does some weird shit o ____ o
-	public void removeVert(PVertex v) {
-		int count = 0;
-		foreach (PVertex vt in verts) {
-			if (v.getID () == vt.getID ()) {
-				verts.RemoveAt (count);
-				break;
-			}
-			count++;
+			curr = curr.Next;
 		}
 	}
 
+	public void removeEdge(PEdge e, System.Collections.Generic.LinkedList<PEdge> edgelist) {
+		System.Collections.Generic.LinkedListNode<PEdge> curr = edgelist.First;						
+		while (curr != null) {
+			PEdge d = curr.Value;
+			if (e.Equals (d)) {
+				edges.Remove (curr);
+				return;
+			}
+			curr = curr.Next;
+		}
 
-	public System.Collections.Generic.List<PVertex> getVerts() {
-		return verts;
 	}
 
-	public System.Collections.Generic.List<PEdge> getEdges() {
-		return edges;
+	public void removeVert(PVertex v) {	
+		System.Collections.Generic.LinkedListNode<PVertex> curr = verts.First;						
+		while (curr != null) {
+			PVertex d = curr.Value;
+			if (v.Equals (d)) {
+				verts.Remove (curr);
+				return;
+			}
+			curr = curr.Next;
+		}
 	}
 
+	public void removeVert(PVertex v, System.Collections.Generic.LinkedList<PVertex> vertlist) {
+		System.Collections.Generic.LinkedListNode<PVertex> curr = vertlist.First;						
+		while (curr != null) {
+			PVertex d = curr.Value;
+			if (v.Equals (d)) {
+				verts.Remove (curr);
+				return;
+			}
+			curr = curr.Next;
+		}	
+	}
 
+	System.Collections.Generic.LinkedListNode<PVertex> findVertNode(PVertex v) {
+		System.Collections.Generic.LinkedListNode<PVertex> curr = verts.First;
+		while (curr!= null) {
+			if (curr.Value.Equals (v)) { return curr; }	
+			curr = curr.Next;
+		}
+		return null;
+	}
+	
+	System.Collections.Generic.LinkedListNode<PEdge> findEdgeBetween(PVertex u, PVertex v) {
+		System.Collections.Generic.LinkedListNode<PEdge> curr = edges.First;
+		while (curr!= null) {
+			if (curr.Value.isBetween (u, v)) { 
+				return curr; 
+			}		
+			curr = curr.Next;
+		}
+		return null;
+	}
 	// Split the face down the two points v0 and v1
-	// Edits the structure of the current face to be half, and returns the other half face
+	// Returns the new faces in a list
 
 	// a -- v0 -- b
 	// |     |    |
@@ -67,48 +150,69 @@ public class PFace : MonoBehaviour {
 	// |     |    |
 	// d -- v1 -- c
 
-	public PFace split(PVertex v0, PVertex v1) {
-		PVertex curr = v0;
-		PVertex prev = v0;
-		PEdge newEdge = new PEdge (v0, v1);
+	public System.Collections.Generic.List<PFace> split(PVertex v0, PVertex v1) {
 
 		// If they share an edge, can't split face
-		foreach (PEdge e in v0.getNeighbors ()) {
-			if (e.getOther (v0).getID() == v1.getID ()) { return null; }
+		if (v0.isNeighbor(v1)) { return null; }
+
+		PEdge newEdge = new PEdge (v0, v1);
+		Debug.Log ("V0: " + v0.getID ());
+
+		System.Collections.Generic.LinkedList<PVertex> rightVerts = new System.Collections.Generic.LinkedList<PVertex> ();
+		System.Collections.Generic.LinkedList<PEdge> rightEdges = new System.Collections.Generic.LinkedList<PEdge> ();
+
+		System.Collections.Generic.LinkedList<PVertex> leftVerts = new System.Collections.Generic.LinkedList<PVertex> ();
+		System.Collections.Generic.LinkedList<PEdge> leftEdges = new System.Collections.Generic.LinkedList<PEdge> ();
+
+		System.Collections.Generic.LinkedListNode<PVertex> currV = findVertNode (v0);
+		PVertex next = verts.First.Value;
+		if (currV.Next != null) {
+			next = currV.Next.Value;
 		}
-		System.Collections.Generic.List<PVertex> newVerts = new System.Collections.Generic.List<PVertex> ();
-		System.Collections.Generic.List<PEdge> newEdges = new System.Collections.Generic.List<PEdge> ();
-		newVerts.Add (v0);
-		while (curr.getID () != v1.getID ()) {
-			foreach (PEdge e in curr.getNeighbors ()) {
-				PVertex v = e.getOther (curr);
-				if (v.getID () != prev.getID ()) {
-					prev = curr;
-					curr = v;
-//					Debug.Log ("Curr: " + curr.getID ());
-//					Debug.Log ("Prev: " + prev.getID ());
-//					Debug.Log ("V1: " + v1.getID ());
-					newVerts.Add (v);
-					newEdges.Add (e);
-					if (v.getID () != v1.getID ()) {
-						removeVert (v);
-					}
-					removeEdge (e);
-					break;
-				}
-			}
+		System.Collections.Generic.LinkedListNode<PEdge> currE = findEdgeBetween (v0, next);
+
+		// Traverse right face first
+		while (!currV.Value.Equals(v1)) {
+			rightVerts.AddLast (currV.Value);
+			rightEdges.AddLast (currE.Value);
+
+			if (currV.Next != null) { currV = currV.Next; }
+			else { currV = verts.First; }
+			if (currE.Next != null) { currE = currE.Next; }
+			else { currE = edges.First; }
 		}
-		// v0     v1 -- c -- v0
-		edges.Add (newEdge);
+		rightVerts.AddLast (currV.Value);
+		rightEdges.AddLast (newEdge);
+		// Traverse verts in left face
+		while (!currV.Value.Equals (v0)) {
+			leftVerts.AddLast (currV.Value);
+			leftEdges.AddLast (currE.Value);
+			
+			if (currV.Next != null) { currV = currV.Next; }
+			else { currV = verts.First; }
+			if (currE.Next != null) { currE = currE.Next; }
+			else { currE = edges.First; }
+		}
+		leftVerts.AddLast (currV.Value);
+		leftEdges.AddLast (newEdge);
+
+	
+		v0.addNeighbor (newEdge);
+		v1.addNeighbor (newEdge);
+
+		PFace newFace1 = new PFace ();
+		PFace newFace2 = new PFace ();
+		newFace1.setVerts (rightVerts);
+		newFace1.setEdges (rightEdges);
+		newFace2.setVerts (leftVerts);
+		newFace2.setEdges (leftEdges);
 
 
-		// v0--a--b--v1
-		newEdges.Add (newEdge);
-		PFace newFace = new PFace ();
-		newFace.verts = newVerts;
-		newFace.edges = newEdges;
+		System.Collections.Generic.List<PFace> newFaces = new System.Collections.Generic.List<PFace> ();
+		newFaces.Add (newFace1);
+		newFaces.Add (newFace2);
 
-		return newFace;
+		return newFaces;
 	}
 
 }

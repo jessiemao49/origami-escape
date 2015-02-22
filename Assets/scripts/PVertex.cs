@@ -13,15 +13,12 @@ public class PVertex : MonoBehaviour {
 		neighbors = new System.Collections.Generic.List<PEdge>();
 	}
 
-
-	public void move(Vector3 xyz) {
+	public void setPos(Vector3 xyz) {
 		pos = xyz;
 	}
 
-	public Vector3 getPos() {
-		return pos;
-	}
-	
+	public Vector3 getPos() { return pos; }
+
 	public void addNeighbor(PEdge n) {
 		neighbors.Add (n);
 	}
@@ -49,12 +46,32 @@ public class PVertex : MonoBehaviour {
 		}
 	}
 
+	public bool isNeighbor(PVertex v) {
+		foreach (PEdge e in neighbors) {
+			if (e.getOther (this).getID() == v.getID ()) { 
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public System.Collections.Generic.List<PEdge> getNeighbors() {
 		return neighbors;
 	}
 
 	public int getID() {
 		return id;
+	}
+
+	public bool Equals(Object obj)  {
+//		if (obj == null || GetType() != obj.GetType()) return false;
+		PVertex r = (PVertex)obj;
+		// Use Equals to compare instance variables.
+		return id == r.getID ();
+	}
+	
+	public override int GetHashCode() {
+		return id.ToString().GetHashCode();
 	}
 
 }
