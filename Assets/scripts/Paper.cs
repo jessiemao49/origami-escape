@@ -9,7 +9,7 @@ public class Paper : MonoBehaviour {
 	void Start () {
 		faces = new System.Collections.Generic.List<PFace> ();
 		// Set up game object with mesh;
-		gameObject.AddComponent(typeof(MeshRenderer));
+//		gameObject.AddComponent(typeof(MeshRenderer));
 		filter = gameObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
 		vcount = 0;
 		createSquare ();
@@ -34,6 +34,10 @@ public class Paper : MonoBehaviour {
 		verts.Add(new PVertex (new Vector3 (1.0f, 0.0f, -1.0f), vcount++));
 		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, -1.0f), vcount++));
 		verts.Add(new PVertex (new Vector3 (-1.0f, 0.0f, 1.0f), vcount++));
+		verts[0].setUV (new Vector2 (1.0f, 1.0f));
+		verts[1].setUV (new Vector2 (1.0f, 0.0f));
+		verts[2].setUV (new Vector2 (0.0f, 0.0f));
+		verts[3].setUV (new Vector2 (0.0f, 1.0f));
 
 		
 		edges.Add (new PEdge (verts [0], verts [1]));
@@ -139,20 +143,7 @@ public class Paper : MonoBehaviour {
 		Mesh msh = new Mesh();
 		System.Collections.Generic.List<int> meshIDs = new System.Collections.Generic.List<int> ();
 		System.Collections.Generic.List<Vector3> meshVerts = new System.Collections.Generic.List<Vector3> ();
-
-//		int j = 0;
-//		foreach(PFace face in faces) {
-//			Debug.Log ("Face: " + j++);
-//			Debug.Log ("FACE VERTS:");
-//			foreach (PVertex v in face.getVerts()) {
-//				Debug.Log ("vertex " + v.getID () + ": " + v.getPos ());
-//			}
-//			Debug.Log ("FACE EDGES:");
-//			foreach (PEdge e in face.getEdges()) {
-//				Debug.Log (e.getP0 ().getID () + "--" + e.getP1 ().getID ());
-//			}
-//		}
-
+		System.Collections.Generic.List<Vector2> meshUVs = new System.Collections.Generic.List<Vector2> ();
 
 		int vertCount = 0;
 		for (int x = 0; x < faces.Count; x++) {
@@ -163,7 +154,46 @@ public class Paper : MonoBehaviour {
 			// Only triangulate based on x and z 
 			int i = 0 ;
 			foreach(PVertex v in f.getVerts()) {
-				vertices2D [i] = new Vector2 (v.getPos()[0], v.getPos()[2]); 
+				vertices2D [i] = new Vector2 (v.getPos()[0], v.getPos()[2]);
+
+				// Interpolate UV based on neighbors for new points
+				if (v.getUV() == new Vector2(-1, -1)) {
+					float a = 0.0f;
+					float b = 0.0f;
+					float totalDistA = 0.0f;
+					float totalDistB = 0.0f;
+
+					// Find neighbor N1 (u1, v1), neighbor N2 (u1, v1)
+					// Find angle alpha between N2 - N1 and P - N1 in world coordinates
+					// Find J = world distance between N1, N2
+					// Find K = UV Distance between N1, N2
+					// K / J * |P(w) - N1(w)| = distance D between N1 and P in UV coordinates
+					// rotate N2-N1 by alpha, normalize, times D
+
+					System.Collections.Generic.List<PVertex> n = new System.Collections.Generic.List<PVertex>();
+					foreach(PVertex u in v.getNeighborVerts()) {
+						if (u.getUV () != new Vector2(-1, -1)) {
+							n.Add (u);
+						}
+						if (n.Count == 2) { break; }
+					}
+
+					Vector2 A = n[1].getPos() - n[0].getPos ();
+					Vector2 B = v.getPos () - n[0].getPos ();
+					float theta = Mathf.Acos(Vector2.Dot (A, B) / A.magnitude / B.magnitude);
+					if (Mathf.Abs(Vector2.Dot(A,B)) < 0.0001) {
+						theta = Mathf.PI;
+					}
+
+					float J = A.magnitude;
+					float K = (n[1].getUV() - n[0].getUV ()).magnitude;
+					float D = K / J * (v.getPos() - n[0].getPos()).magnitude;
+					Vector2 direction = (Quaternion.Euler(0, theta, 0) * A).normalized;
+					Vector2 UV = n[0].getUV() + (direction * D);
+
+					v.setUV (UV);
+				}
+				meshUVs.Add(v.getUV());
 				i++;
 			}
 
@@ -180,15 +210,23 @@ public class Paper : MonoBehaviour {
 				meshVerts.Add(v.getPos());
 			}
 			vertCount = meshVerts.Count;
-
 		}
 
 		// Create the mesh
 		msh.vertices = meshVerts.ToArray();
 		msh.triangles = meshIDs.ToArray();
+		msh.uv = meshUVs.ToArray();
 		msh.RecalculateNormals();
 		msh.RecalculateBounds();
-		
+
+//		Renderer renderer = GetComponent<MeshRenderer> ().renderer;
+//		Material mat = Resources.Load ("textures/paper") as Material;
+//		if (mat != null) {
+//			renderer.material = mat;
+//			Debug.Log ("Material loaded");
+//		} else {
+//			Debug.LogError("NO MATERIAL");
+//		}
 		filter.mesh = msh;
 
 	}

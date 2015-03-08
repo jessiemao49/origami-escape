@@ -1,12 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/PFace.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/Fold.cs">
     <Files>
-      <File FileName="Assets/scripts/Paper.cs" Line="143" Column="3" />
-      <File FileName="Assets/Scripts/PVertex.cs" Line="38" Column="27" />
-      <File FileName="Assets/scripts/PFace.cs" Line="156" Column="1" />
-      <File FileName="Assets/scripts/Fold.cs" Line="117" Column="6" />
-      <File FileName="Assets/scripts/PEdge.cs" Line="42" Column="62" />
+      <File FileName="Assets/scripts/Paper.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/PVertex.cs" Line="26" Column="7" />
+      <File FileName="Assets/scripts/PFace.cs" Line="257" Column="10" />
+      <File FileName="Assets/scripts/Fold.cs" Line="47" Column="67" />
+      <File FileName="Assets/scripts/PEdge.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.Debugger.WatchPad">
@@ -18,10 +18,7 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/jessiemao/Documents/PENN/2015-01/Senior Design/Origami Escape/Assets/scripts/PFace.cs" line="170" />
-      <Breakpoint file="/Users/jessiemao/Documents/PENN/2015-01/Senior Design/Origami Escape/Assets/scripts/PFace.cs" line="156" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

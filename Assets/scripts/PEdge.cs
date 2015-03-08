@@ -19,6 +19,10 @@ public class PEdge : MonoBehaviour {
 	public PVertex getOther(PVertex me) {
 		return p0.getID () == me.getID () ? p1 : p0;
 	}
+
+	public bool hasVert (PVertex p) {
+		return p.Equals (p0) || p.Equals (p1);
+	}
 	
 	public void setOther(ref PVertex me, ref PVertex newYou) {
 		if (p0 == me) {

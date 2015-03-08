@@ -6,10 +6,12 @@ public class PVertex : MonoBehaviour {
 	private Vector3 pos;
 	private int id;
 	private System.Collections.Generic.List<PEdge> neighbors;
+	private Vector2 uv;
 	
 	public PVertex (Vector3 xyz, int ID) {
 		pos = xyz;
 		id = ID;
+		uv = new Vector2 (-1, -1);
 		neighbors = new System.Collections.Generic.List<PEdge>();
 	}
 
@@ -59,6 +61,14 @@ public class PVertex : MonoBehaviour {
 		return neighbors;
 	}
 
+	public System.Collections.Generic.List<PVertex> getNeighborVerts() {
+		System.Collections.Generic.List<PVertex> ret = new System.Collections.Generic.List<PVertex> ();
+		foreach (PEdge e in neighbors) {
+			ret.Add(e.getOther(this));
+		}
+		return ret;
+	}
+
 	public int getID() {
 		return id;
 	}
@@ -72,6 +82,14 @@ public class PVertex : MonoBehaviour {
 	
 	public override int GetHashCode() {
 		return id.ToString().GetHashCode();
+	}
+
+	public Vector2 getUV() {
+		return uv;
+	}
+
+	public void setUV(Vector2 input) {
+		uv = input;
 	}
 
 }

@@ -15,7 +15,8 @@ public class Fold : MonoBehaviour {
 	}
 	
 	void Update () {
-		if (Input.GetMouseButtonDown(0)) {			
+		
+		if (Input.GetMouseButtonDown(0)) {
 			var mousePos = Input.mousePosition;
 			mousePos.z = zDistance;
 			startMouse = Camera.main.ScreenToWorldPoint(mousePos);
@@ -33,59 +34,96 @@ public class Fold : MonoBehaviour {
 
 			System.Collections.Generic.List<PFace> faces = paper.getFaces();
 			System.Collections.Generic.List<PFace> newFaces = new System.Collections.Generic.List<PFace>();
-			bool[] toRemove = new bool[faces.Capacity];
+			bool[] toRemove = new bool[faces.Count];
+
+			System.Collections.Generic.List<PVertex> newVertsFold = new System.Collections.Generic.List<PVertex>();
+			System.Collections.Generic.List<PFace> flipFaces = new System.Collections.Generic.List<PFace>();
+			System.Collections.Generic.HashSet<PVertex> flipVerts = new System.Collections.Generic.HashSet<PVertex>();
 
 			// Find edge that intersects with fold line
 			for (int i = 0 ; i < faces.Count; i++) {
 				PFace f = faces.ToArray()[i];
+				Debug.Log ("Face: " + f.ToString());
 				System.Collections.Generic.List<PVertex> newVerts = new System.Collections.Generic.List<PVertex>();
 				foreach (PEdge e in f.getEdgesArray()) {
-//					Debug.Log ("LOGGING EDGE: " + e.getP0().getID() + ", " + e.getP1 ().getID ());
-					Vector3 intersection = TestIntersection(b, e.getP0().getPos(), e.getP1().getPos ());
-					if (Mathf.Abs(intersection.y) < epsilon) {
+					Debug.Log (e.getP0().getID () +  /*": " + e.getP0 ().getPos() + */ " -- " + e.getP1 ().getID ());// + ": " + e.getP1 ().getPos());
+					Vector3 intersection = TestIntersection(b, e.getP0().getPos(), e.getP1().getPos());
+					if (Mathf.Abs(intersection.y) < 9.0f) {
 						// Add intersection vertex on edge
 						// p0 ----- v ------- p1
 						//      e       e2
 
 						PVertex p0 = e.getP0 ();
 						PVertex p1 = e.getP1 ();
-						PVertex v = new PVertex(intersection, paper.getID());
+	
+						// Check if vert was just created within the fold
+						PVertex v = new PVertex (intersection, paper.getID ());
 
-//						Debug.Log ("P0: " + p0.getID() + " NEIGHBORS");
-//						foreach(PEdge neighbor in p0.getNeighbors()) {
-//							Debug.Log (">>" + neighbor.getP0().getID () + " -- " + neighbor.getP1 ().getID());
-//						}
+						bool alreadyMade = false;
+						foreach(PVertex nv in newVertsFold) {
+							if (almostEquals(nv.getPos(), intersection)) {
+								v = nv;
+								break;
+							}
+						}
 
-						PEdge e1 = new PEdge(v, e.getP0 ());
+						PEdge e1 = new PEdge(v, e.getP0());
 						PEdge e2 = new PEdge(v, e.getP1());
 
-						p0.removeNeighbor (e);
-						p0.addNeighbor (e1);
-						v.addNeighbor(e1);
-						v.addNeighbor(e2);
-						p1.removeNeighbor(e);
-						p1.addNeighbor (e2);
+						if (!v.isNeighbor(p0)) {
+							v.addNeighbor(e1);
+							p0.removeNeighbor (e);
+							p0.addNeighbor (e1);
+						}
 
-						// Maintain the order of the vertices
-						f.addVertAfter(p0, v);
-						f.addEdgeBefore (e, e1);
-						f.addEdgeAfter (e, e2);
+						if (!v.isNeighbor(p1)) {
+							v.addNeighbor(e2);
+							p1.removeNeighbor(e);
+							p1.addNeighbor (e2);
+						}
+
+						// Maintain the order of the vertices & edges
+						if (f.ccFirst(p0, p1, e)) {
+							f.addVertAfter(p0, v);
+							f.addEdgeBefore (e, e1);
+							f.addEdgeAfter (e, e2);
+						} else {
+							f.addVertAfter (p1, v);
+							f.addEdgeBefore (e, e2);
+							f.addEdgeAfter (e, e1);
+						}
+
 						f.removeEdge (e);
-
 						newVerts.Add(v);
+						if (!alreadyMade) {
+							newVertsFold.Add (v);
+						}
 					}
 				}
-				// SPLIT face down the newVerts. Don't remove yet until all faces are split.
+				// SPLIT face down the newVerts. Don't remove or flip yet until all faces are split.
 				if (newVerts.Count > 0) {
+
+					Debug.Log ("Split Face: " + newVerts[0].getID() + ":"
+					           + newVerts[0].getPos() + ", " + newVerts[1].getID() + ":"
+					           + newVerts[1].getPos ());
+
 					System.Collections.Generic.List<PFace> split = f.split(newVerts[0], newVerts[1]);
+
 					if (split != null) {
 						// Find out which face is from the origin side
 						foreach(PVertex v in split[0].getVerts ()) {
 							if (v.getID() != newVerts[0].getID() && v.getID () != newVerts[1].getID ()) {
 								if (isFromOrigin(v)) {
-									flip (split[0]);
+									flipFaces.Add(split[0]);
+									foreach( PVertex u in split[0].getVerts()) {
+										flipVerts.Add (u);
+									}
+
 								} else {
-									flip (split[1]);
+									flipFaces.Add (split[1]);
+									foreach( PVertex u in split[1].getVerts()) {
+										flipVerts.Add (u);
+									}
 								}
 								break;
 							}
@@ -97,22 +135,28 @@ public class Fold : MonoBehaviour {
 					}
 				}
 			}
+			foreach( PVertex v in flipVerts) {
+//				flip(v);
+			}
 			// remove all the marked faces, replace with new faces
-			for (int i = 0 ; i < faces.Count; i++) {
+			for (int i = faces.Count-1 ; i >= 0; i--) {
 				if (toRemove[i]) {
 					faces.RemoveAt(i);
 				}
 			}
 			foreach (PFace f in newFaces) {
-				faces.Add (f); 
+				faces.Add (f);
 			}
 			paper.triangulateFaces();
-			foreach (PFace f in paper.getFaces()) {
-				Debug.Log ("FACE");
-				foreach(PVertex v in f.getVerts ()) {
-					Debug.Log ("- VERT " + v.getID() + ": " + v.getPos());
-					foreach(PEdge e in v.getNeighbors()) {
-						Debug.Log ("--> " + e.getOther(v).getID());
+
+			if (paper.getFaces ().Count > 2) {
+				foreach (PFace f in paper.getFaces()) {
+					Debug.Log ("FACE");
+					foreach(PVertex v in f.getVerts ()) {
+						Debug.Log ("- VERT " + v.getID() + ": " + v.getPos());
+						/*						foreach(PEdge e in v.getNeighbors()) {
+							Debug.Log ("--> " + e.getOther(v).getID());
+						}*/
 					}
 				}
 			}
@@ -126,6 +170,7 @@ public class Fold : MonoBehaviour {
 		Vector3 r0 = fold.origin;
 		Vector3 s1 = fold.direction;
 		Vector3 s2 = p1 - p0;
+
 
 		float s, t;
 		s = (-s1.z * (r0.x - p0.x) + s1.x * (r0.z - p0.z)) / (-s2.x * s1.z + s1.x * s2.z);
@@ -187,8 +232,25 @@ public class Fold : MonoBehaviour {
 			P = C - A;
 			Q = B - A;
 			K = Vector3.Dot (P, Q) / Q.sqrMagnitude * Q;
-			v.setPos(A + (2 * K) - P);
+			// Elevate folded verts
+			Vector3 pos = A + (2 * K) - P;
+//			pos += new Vector3(0.0f, 0.01f, 0.0f);
+			v.setPos(pos);
 		}
+	}
+
+	// Flip vertex across fold line
+	void flip(PVertex v) {
+		Vector3 A = foldLine.origin;
+		Vector3 B = foldLine.origin + foldLine.direction;
+		Vector3 C = v.getPos();
+		Vector3 P = C - A;
+		Vector3 Q = B - A;
+		Vector3 K = Vector3.Dot (P, Q) / Q.sqrMagnitude * Q;
+		// Elevate folded verts
+		Vector3 pos = A + (2 * K) - P;
+		//			pos += new Vector3(0.0f, 0.01f, 0.0f);
+		v.setPos(pos);
 	}
 
 }

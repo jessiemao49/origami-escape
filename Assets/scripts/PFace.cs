@@ -71,7 +71,7 @@ public class PFace : MonoBehaviour {
 			curr = curr.Next;
 		}
 	}
-
+	// Because verts.remove doesn't work.
 	public void removeEdge(PEdge e) {
 		System.Collections.Generic.LinkedListNode<PEdge> curr = edges.First;						
 		while (curr != null) {
@@ -83,7 +83,7 @@ public class PFace : MonoBehaviour {
 			curr = curr.Next;
 		}
 	}
-
+	// Because verts.remove doesn't work.
 	public void removeEdge(PEdge e, System.Collections.Generic.LinkedList<PEdge> edgelist) {
 		System.Collections.Generic.LinkedListNode<PEdge> curr = edgelist.First;						
 		while (curr != null) {
@@ -97,6 +97,7 @@ public class PFace : MonoBehaviour {
 
 	}
 
+	// Because verts.remove doesn't work.
 	public void removeVert(PVertex v) {	
 		System.Collections.Generic.LinkedListNode<PVertex> curr = verts.First;						
 		while (curr != null) {
@@ -108,7 +109,7 @@ public class PFace : MonoBehaviour {
 			curr = curr.Next;
 		}
 	}
-
+	// Because verts.remove doesn't work.
 	public void removeVert(PVertex v, System.Collections.Generic.LinkedList<PVertex> vertlist) {
 		System.Collections.Generic.LinkedListNode<PVertex> curr = vertlist.First;						
 		while (curr != null) {
@@ -121,6 +122,7 @@ public class PFace : MonoBehaviour {
 		}	
 	}
 
+	// Because verts.find doesn't work.
 	System.Collections.Generic.LinkedListNode<PVertex> findVertNode(PVertex v) {
 		System.Collections.Generic.LinkedListNode<PVertex> curr = verts.First;
 		while (curr!= null) {
@@ -151,13 +153,21 @@ public class PFace : MonoBehaviour {
 	// d -- v1 -- c
 
 	public System.Collections.Generic.List<PFace> split(PVertex v0, PVertex v1) {
+		if (v0.getID () == 10 && v1.getID () == 11) {
+			Debug.Log ("SPLIT FACE: ");
+			foreach (PVertex v in verts) {
+					Debug.Log (v.getID ());
+			}
+			foreach (PEdge e in edges) {
+					Debug.Log (e.toString ());
+			}
+		}	
+
 
 		// If they share an edge, can't split face
 		if (v0.isNeighbor(v1)) { return null; }
 
 		PEdge newEdge = new PEdge (v0, v1);
-		Debug.Log ("V0: " + v0.getID ());
-
 		System.Collections.Generic.LinkedList<PVertex> rightVerts = new System.Collections.Generic.LinkedList<PVertex> ();
 		System.Collections.Generic.LinkedList<PEdge> rightEdges = new System.Collections.Generic.LinkedList<PEdge> ();
 
@@ -183,7 +193,7 @@ public class PFace : MonoBehaviour {
 		}
 		rightVerts.AddLast (currV.Value);
 		rightEdges.AddLast (newEdge);
-		// Traverse verts in left face
+		// Traverse left face
 		while (!currV.Value.Equals (v0)) {
 			leftVerts.AddLast (currV.Value);
 			leftEdges.AddLast (currE.Value);
@@ -195,7 +205,6 @@ public class PFace : MonoBehaviour {
 		}
 		leftVerts.AddLast (currV.Value);
 		leftEdges.AddLast (newEdge);
-
 	
 		v0.addNeighbor (newEdge);
 		v1.addNeighbor (newEdge);
@@ -207,12 +216,47 @@ public class PFace : MonoBehaviour {
 		newFace2.setVerts (leftVerts);
 		newFace2.setEdges (leftEdges);
 
-
 		System.Collections.Generic.List<PFace> newFaces = new System.Collections.Generic.List<PFace> ();
 		newFaces.Add (newFace1);
 		newFaces.Add (newFace2);
 
 		return newFaces;
+	}
+
+	// Determines whether v comes before u on the edge e between them, 
+	// when you go clockwise around the face
+	public bool ccFirst(PVertex v, PVertex u, PEdge e) {
+		System.Collections.Generic.LinkedListNode<PEdge> curr = edges.First;
+		while (curr.Next != null) {
+			if (curr.Value.Equals (e)) {
+				if (curr.Next.Value.hasVert(v)) {
+					return false;
+				} else if (curr.Next.Value.hasVert (u)) {
+					return true;
+				} else {
+					Debug.Log ("THIS SHOULDN'T HAPPEN");
+				}
+			}
+			curr = curr.Next;
+		}
+		if (edges.First.Value.hasVert(v)) {
+			return false;
+		} else if (edges.First.Value.hasVert (u)) {
+			return true;
+		} else {
+			Debug.Log ("THIS SHOULDN'T HAPPEN");
+		}
+
+		return false;
+
+	}
+
+	public override string ToString() {
+		string s = "";
+		foreach (PVertex v in verts) {
+			s += v.getID() + ",";
+		}
+		return s.Substring (0, s.Length - 1);
 	}
 
 }
