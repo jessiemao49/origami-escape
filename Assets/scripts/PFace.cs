@@ -234,7 +234,7 @@ public class PFace : MonoBehaviour {
 				} else if (curr.Next.Value.hasVert (u)) {
 					return true;
 				} else {
-					Debug.Log ("THIS SHOULDN'T HAPPEN");
+					Debug.LogError ("THIS SHOULDN'T HAPPEN");
 				}
 			}
 			curr = curr.Next;
@@ -244,7 +244,7 @@ public class PFace : MonoBehaviour {
 		} else if (edges.First.Value.hasVert (u)) {
 			return true;
 		} else {
-			Debug.Log ("THIS SHOULDN'T HAPPEN");
+			Debug.LogError ("THIS SHOULDN'T HAPPEN");
 		}
 
 		return false;

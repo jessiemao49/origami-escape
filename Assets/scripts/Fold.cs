@@ -43,10 +43,10 @@ public class Fold : MonoBehaviour {
 			// Find edge that intersects with fold line
 			for (int i = 0 ; i < faces.Count; i++) {
 				PFace f = faces.ToArray()[i];
-				Debug.Log ("Face: " + f.ToString());
+//				Debug.Log ("Face: " + f.ToString());
 				System.Collections.Generic.List<PVertex> newVerts = new System.Collections.Generic.List<PVertex>();
 				foreach (PEdge e in f.getEdgesArray()) {
-					Debug.Log (e.getP0().getID () +  /*": " + e.getP0 ().getPos() + */ " -- " + e.getP1 ().getID ());// + ": " + e.getP1 ().getPos());
+//					Debug.Log (e.getP0().getID () +  /*": " + e.getP0 ().getPos() + */ " -- " + e.getP1 ().getID ());// + ": " + e.getP1 ().getPos());
 					Vector3 intersection = TestIntersection(b, e.getP0().getPos(), e.getP1().getPos());
 					if (Mathf.Abs(intersection.y) < 9.0f) {
 						// Add intersection vertex on edge
@@ -102,11 +102,11 @@ public class Fold : MonoBehaviour {
 				}
 				// SPLIT face down the newVerts. Don't remove or flip yet until all faces are split.
 				if (newVerts.Count > 0) {
-
+					/*
 					Debug.Log ("Split Face: " + newVerts[0].getID() + ":"
 					           + newVerts[0].getPos() + ", " + newVerts[1].getID() + ":"
 					           + newVerts[1].getPos ());
-
+*/
 					System.Collections.Generic.List<PFace> split = f.split(newVerts[0], newVerts[1]);
 
 					if (split != null) {
@@ -128,7 +128,6 @@ public class Fold : MonoBehaviour {
 								break;
 							}
 						}
-
 						newFaces.Add(split[0]);
 						newFaces.Add(split[1]);
 						toRemove[i] = true;
@@ -136,7 +135,7 @@ public class Fold : MonoBehaviour {
 				}
 			}
 			foreach( PVertex v in flipVerts) {
-//				flip(v);
+				flip(v);
 			}
 			// remove all the marked faces, replace with new faces
 			for (int i = faces.Count-1 ; i >= 0; i--) {
@@ -154,9 +153,9 @@ public class Fold : MonoBehaviour {
 					Debug.Log ("FACE");
 					foreach(PVertex v in f.getVerts ()) {
 						Debug.Log ("- VERT " + v.getID() + ": " + v.getPos());
-						/*						foreach(PEdge e in v.getNeighbors()) {
+						foreach(PEdge e in v.getNeighbors()) {
 							Debug.Log ("--> " + e.getOther(v).getID());
-						}*/
+						}
 					}
 				}
 			}
