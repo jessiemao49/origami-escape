@@ -5,7 +5,9 @@ public class Paper : MonoBehaviour {
 	private MeshFilter filter;
 	private System.Collections.Generic.List<PFace> faces;
 	private int vcount;
-	
+	public int maxLayer;
+	private float epsilon = 0.0001f;
+
 	void Start () {
 		faces = new System.Collections.Generic.List<PFace> ();
 		// Set up game object with mesh;
@@ -14,6 +16,7 @@ public class Paper : MonoBehaviour {
 		vcount = 0;
 		createSquare ();
 		triangulateFaces ();
+		maxLayer = 0;
 	}
 
 	void Update () {
@@ -64,6 +67,7 @@ public class Paper : MonoBehaviour {
 		faces [0].addEdge (edges [1]);
 		faces [0].addEdge (edges [2]);
 		faces [0].addEdge (edges [3]);
+		faces [0].setLayer (0);
 	}
 	
 	// For testing purposes	
@@ -146,8 +150,7 @@ public class Paper : MonoBehaviour {
 		System.Collections.Generic.List<Vector2> meshUVs = new System.Collections.Generic.List<Vector2> ();
 
 		int vertCount = 0;
-		for (int x = 0; x < faces.Count; x++) {
-			PFace f = faces[x];
+		foreach (PFace f in faces) {
 			int numVerts = f.getNumVerts();
 
 			Vector2[] vertices2D = new Vector2[numVerts];
@@ -155,51 +158,9 @@ public class Paper : MonoBehaviour {
 			int i = 0 ;
 			foreach(PVertex v in f.getVerts()) {
 				vertices2D [i] = new Vector2 (v.getPos()[0], v.getPos()[2]);
-
-				// Calculate UV based on neighbors 
-				if (v.getUV() == new Vector2(-1, -1)) {
-					// Find neighbor N1 (u1, v1), neighbor N2 (u1, v1)
-					// Find angle alpha between N2 - N1 and P - N1 in world coordinates
-					// Find J = world distance between N1, N2
-					// Find K = UV Distance between N1, N2
-					// K / J * |P(w) - N1(w)| = distance D between N1 and P in UV coordinates
-					// rotate N2-N1 by alpha, normalize, times D
-					Debug.Log ("P  " + v.getID() + ": " + v.getPos());
-					System.Collections.Generic.List<PVertex> n = new System.Collections.Generic.List<PVertex>();
-					foreach(PVertex u in v.getNeighborVerts()) {
-						if (u.getUV () != new Vector2(-1, -1)) {
-							n.Add (u);
-						}
-						if (n.Count == 2) { break; }
-					}
-
-					Vector2 A = new Vector2((n[1].getPos() - n[0].getPos ()).x, (n[1].getPos() - n[0].getPos ()).z);
-					Vector2 B = new Vector2((v.getPos () - n[0].getPos ()).x, (v.getPos () - n[0].getPos ()).z);
-					Debug.Log ("N1: " + n[0].getUV());
-					Debug.Log ("N2: " + n[1].getUV());
-					float theta = Mathf.Acos(Vector2.Dot (A, B) / A.magnitude / B.magnitude);
-					if (Mathf.Abs(Vector2.Dot(A,B)) < 0.0001) {
-						theta = Mathf.PI;
-					}
-
-					Debug.Log ("THETA: " + theta);
-					Debug.Log ("A: " + A);
-					Debug.Log ("A: " + n[1].getPos () + ", " +  n[0].getPos ());
-					float J = A.magnitude;
-					float K = (n[1].getUV() - n[0].getUV ()).magnitude;
-					float D = K / J * (v.getPos() - n[0].getPos()).magnitude;
-					Debug.Log ("J: " + J);
-					Debug.Log ("K: " + K);
-					Debug.Log ("D: " + D);
-					Vector2 direction = (Quaternion.Euler(0, theta, 0) * A).normalized;
-					Debug.Log ("Direction: " + direction);
-					Vector2 UV = n[0].getUV() + (direction * D);
-					Debug.Log (">>> UV: " + UV);
-					v.setUV (UV);
-				}
 				meshUVs.Add(v.getUV());
 				i++;
-			}
+			} 
 
 			// Use the triangulator to get indices for creating triangles
 			Triangulator tr = new Triangulator (vertices2D);
@@ -211,7 +172,9 @@ public class Paper : MonoBehaviour {
 			}
 
 			foreach(PVertex v in f.getVerts ()){
-				meshVerts.Add(v.getPos());
+				Vector3 p = v.getPos ();
+				p.y = f.getLayer() * epsilon;
+				meshVerts.Add(p);
 			}
 			vertCount = meshVerts.Count;
 		}

@@ -19,6 +19,10 @@ public class PVertex : MonoBehaviour {
 		pos = xyz;
 	}
 
+	public void setY (float y) {
+		pos.y = y;
+	}
+
 	public Vector3 getPos() { return pos; }
 
 	public void addNeighbor(PEdge n) {

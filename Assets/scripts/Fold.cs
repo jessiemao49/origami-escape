@@ -59,6 +59,15 @@ public class Fold : MonoBehaviour {
 						// Check if vert was just created within the fold
 						PVertex v = new PVertex (intersection, paper.getID ());
 
+						// Calculate UV of v based on p0 and p1
+						float d0 = (p0.getPos() - v.getPos()).magnitude;
+						float d1 = (p1.getPos() - v.getPos()).magnitude;
+						float w0 = d1 / (d0 + d1);
+						float w1 = d0 / (d0 + d1);
+
+						Vector3 UV = w0 * p0.getUV() + w1 * p1.getUV();
+						v.setUV(UV);
+
 						bool alreadyMade = false;
 						foreach(PVertex nv in newVertsFold) {
 							if (almostEquals(nv.getPos(), intersection)) {
@@ -106,7 +115,7 @@ public class Fold : MonoBehaviour {
 					Debug.Log ("Split Face: " + newVerts[0].getID() + ":"
 					           + newVerts[0].getPos() + ", " + newVerts[1].getID() + ":"
 					           + newVerts[1].getPos ());
-*/
+					*/
 					System.Collections.Generic.List<PFace> split = f.split(newVerts[0], newVerts[1]);
 
 					if (split != null) {
@@ -118,7 +127,6 @@ public class Fold : MonoBehaviour {
 									foreach( PVertex u in split[0].getVerts()) {
 										flipVerts.Add (u);
 									}
-
 								} else {
 									flipFaces.Add (split[1]);
 									foreach( PVertex u in split[1].getVerts()) {
@@ -134,9 +142,26 @@ public class Fold : MonoBehaviour {
 					}
 				}
 			}
-			foreach( PVertex v in flipVerts) {
+
+			// Organize all the flipFaces by their layer number.
+			// In Reverse Layer order (highest first), keep adding 1 to maxLayer of paper
+			// elevate the flipVerts Y to layer * epsilon
+			LayerComparator lc = new LayerComparator();
+			flipFaces.Sort(lc);
+
+			foreach (PFace f in flipFaces) {
+				f.setLayer(++paper.maxLayer);
+			}
+			foreach (PVertex v in flipVerts) {
 				flip(v);
 			}
+			foreach (PFace f in flipFaces) {
+				foreach( PVertex v in f.getVerts()) {
+//					v.setY (v.getPos().y + (float) f.getLayer() * 0.1f);
+				}
+			}
+
+
 			// remove all the marked faces, replace with new faces
 			for (int i = faces.Count-1 ; i >= 0; i--) {
 				if (toRemove[i]) {
@@ -147,18 +172,18 @@ public class Fold : MonoBehaviour {
 				faces.Add (f);
 			}
 			paper.triangulateFaces();
-
-			if (paper.getFaces ().Count > 2) {
-				foreach (PFace f in paper.getFaces()) {
-					Debug.Log ("FACE");
-					foreach(PVertex v in f.getVerts ()) {
-						Debug.Log ("- VERT " + v.getID() + ": " + v.getPos());
-						foreach(PEdge e in v.getNeighbors()) {
-							Debug.Log ("--> " + e.getOther(v).getID());
-						}
-					}
-				}
-			}
+//
+//			if (paper.getFaces ().Count > 2) {
+//				foreach (PFace f in paper.getFaces()) {
+//					Debug.Log ("FACE");
+//					foreach(PVertex v in f.getVerts ()) {
+//						Debug.Log ("- VERT " + v.getID() + ": " + v.getPos());
+//						foreach(PEdge e in v.getNeighbors()) {
+//							Debug.Log ("--> " + e.getOther(v).getID());
+//						}
+//					}
+//				}
+//			}
 		}
 
 
@@ -189,7 +214,7 @@ public class Fold : MonoBehaviour {
 			return new Vector3(r0.x + (t * s1.x), 0, r0.z + (t * s1.z));
 		}
 
-		return new Vector3 (10.0f, 10.0f, 10.0f); // No collision
+		return new Vector3 (-10.0f, -10.0f, -10.0f); // No collision
 	}
 
 	Ray GetBisector(Vector3 p0, Vector3 p1) {
@@ -220,36 +245,17 @@ public class Fold : MonoBehaviour {
 		return almostEquals (Vector3.Cross (C - A, B - A).normalized, Vector3.Cross (D - A, B - A).normalized);
 	}
 
-	// Flip face across fold line
-	void flip(PFace f) {
-		Vector3 A = foldLine.origin;
-		Vector3 B = foldLine.origin + foldLine.direction;
-		Vector3 C, P, Q, K;
-
-		foreach (PVertex v in f.getVerts ()) {
-			C = v.getPos();
-			P = C - A;
-			Q = B - A;
-			K = Vector3.Dot (P, Q) / Q.sqrMagnitude * Q;
-			// Elevate folded verts
-			Vector3 pos = A + (2 * K) - P;
-//			pos += new Vector3(0.0f, 0.01f, 0.0f);
-			v.setPos(pos);
-		}
-	}
-
 	// Flip vertex across fold line
 	void flip(PVertex v) {
 		Vector3 A = foldLine.origin;
 		Vector3 B = foldLine.origin + foldLine.direction;
-		Vector3 C = v.getPos();
-		Vector3 P = C - A;
-		Vector3 Q = B - A;
-		Vector3 K = Vector3.Dot (P, Q) / Q.sqrMagnitude * Q;
+		Vector2 C = new Vector2(v.getPos().x, v.getPos ().z);
+		Vector2 P = C - new Vector2(A.x, A.z);
+		Vector2 Q = new Vector2(B.x, B.z) - new Vector2(A.x, A.z);
+		Vector2 K = Vector3.Dot (P, Q) / Q.sqrMagnitude * Q;
 		// Elevate folded verts
-		Vector3 pos = A + (2 * K) - P;
-		//			pos += new Vector3(0.0f, 0.01f, 0.0f);
-		v.setPos(pos);
+		Vector2 pos = new Vector2(A.x, A.z) + (2 * K) - P;
+		v.setPos(new Vector3(pos.x, 0.0f, pos.y));
 	}
 
 }

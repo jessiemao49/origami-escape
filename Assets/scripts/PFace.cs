@@ -5,6 +5,7 @@ public class PFace : MonoBehaviour {
 	// Linkedlist of verts and edges maintains order going around the face
 	private System.Collections.Generic.LinkedList<PVertex> verts;
 	private System.Collections.Generic.LinkedList<PEdge> edges;
+	private int layer;
 
 	public PFace() {
 		verts = new System.Collections.Generic.LinkedList<PVertex> ();
@@ -14,6 +15,7 @@ public class PFace : MonoBehaviour {
 	public System.Collections.Generic.LinkedList<PVertex> getVerts() { return verts; }
 	public System.Collections.Generic.LinkedList<PEdge> getEdges() { return edges; }
 	public int getNumVerts() { return verts.Count; }
+	public int getLayer() { return layer; }
 
 	public PEdge[] getEdgesArray() {
 		System.Collections.Generic.List<PEdge> ret = new System.Collections.Generic.List<PEdge>();
@@ -25,9 +27,11 @@ public class PFace : MonoBehaviour {
 
 	public void setVerts(System.Collections.Generic.LinkedList<PVertex> v) { verts = v; }	
 	public void setEdges(System.Collections.Generic.LinkedList<PEdge> e) { edges = e; }
+	public void setLayer(int l) { layer = l; }
 
 	public void addVert(PVertex v) { verts.AddLast (v); }
 	public void addEdge(PEdge e) { edges.AddLast (e); }
+
 
 	public void addVertAfter(PVertex node, PVertex newNode) {
 		System.Collections.Generic.LinkedListNode<PVertex> curr = verts.First;
@@ -153,16 +157,6 @@ public class PFace : MonoBehaviour {
 	// d -- v1 -- c
 
 	public System.Collections.Generic.List<PFace> split(PVertex v0, PVertex v1) {
-		if (v0.getID () == 10 && v1.getID () == 11) {
-			Debug.Log ("SPLIT FACE: ");
-			foreach (PVertex v in verts) {
-					Debug.Log (v.getID ());
-			}
-			foreach (PEdge e in edges) {
-					Debug.Log (e.toString ());
-			}
-		}	
-
 
 		// If they share an edge, can't split face
 		if (v0.isNeighbor(v1)) { return null; }
