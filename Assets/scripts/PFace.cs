@@ -6,16 +6,31 @@ public class PFace : MonoBehaviour {
 	private System.Collections.Generic.LinkedList<PVertex> verts;
 	private System.Collections.Generic.LinkedList<PEdge> edges;
 	private int layer;
+	private Vector3 normal;
+	private bool display;
 
 	public PFace() {
 		verts = new System.Collections.Generic.LinkedList<PVertex> ();
 		edges = new System.Collections.Generic.LinkedList<PEdge> ();
+		normal = new Vector3 (0, 1, 0);
+		display = true;
 	}
 
 	public System.Collections.Generic.LinkedList<PVertex> getVerts() { return verts; }
 	public System.Collections.Generic.LinkedList<PEdge> getEdges() { return edges; }
 	public int getNumVerts() { return verts.Count; }
 	public int getLayer() { return layer; }
+	public Vector3 getNormal() { return normal; }
+	public void setNormal(Vector3 n) { 
+		normal = n;
+		// if pointing at you, display = true; else false
+		display = Vector3.Dot (n, new Vector3 (0, 1, 0)) > 0;
+	}
+	public void flipNormal() {
+		normal = -normal;
+		display = !display;
+	}
+	public bool getDisplay() { return display; }
 
 	public PEdge[] getEdgesArray() {
 		System.Collections.Generic.List<PEdge> ret = new System.Collections.Generic.List<PEdge>();
@@ -209,6 +224,8 @@ public class PFace : MonoBehaviour {
 		newFace1.setEdges (rightEdges);
 		newFace2.setVerts (leftVerts);
 		newFace2.setEdges (leftEdges);
+		newFace1.setNormal (normal);
+		newFace2.setNormal (normal);
 
 		System.Collections.Generic.List<PFace> newFaces = new System.Collections.Generic.List<PFace> ();
 		newFaces.Add (newFace1);

@@ -23,6 +23,11 @@ public class PVertex : MonoBehaviour {
 		pos.y = y;
 	}
 
+	// Flip the vertex's position across the Z axis
+	public void flipZ () {
+		pos.x = -pos.x;
+	}
+
 	public Vector3 getPos() { return pos; }
 
 	public void addNeighbor(PEdge n) {

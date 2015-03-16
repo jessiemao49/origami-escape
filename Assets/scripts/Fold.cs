@@ -58,6 +58,7 @@ public class Fold : MonoBehaviour {
 	
 						// Check if vert was just created within the fold
 						PVertex v = new PVertex (intersection, paper.getID ());
+						paper.addVert(v);
 
 						// Calculate UV of v based on p0 and p1
 						float d0 = (p0.getPos() - v.getPos()).magnitude;
@@ -122,17 +123,25 @@ public class Fold : MonoBehaviour {
 						// Find out which face is from the origin side
 						foreach(PVertex v in split[0].getVerts ()) {
 							if (v.getID() != newVerts[0].getID() && v.getID () != newVerts[1].getID ()) {
-								if (isFromOrigin(v)) {
-									flipFaces.Add(split[0]);
-									foreach( PVertex u in split[0].getVerts()) {
-										flipVerts.Add (u);
-									}
-								} else {
-									flipFaces.Add (split[1]);
-									foreach( PVertex u in split[1].getVerts()) {
-										flipVerts.Add (u);
-									}
+								bool fromOrigin = isFromOrigin (v);
+								PFace toFlip = fromOrigin ? split[0] : split[1];
+								PFace notToFlip = fromOrigin ? split[1] : split[0];
+
+								Debug.Log ("=== BEFORE SPLIT === ");
+								Debug.Log ("Face: " + f.ToString() + ", " + f.getDisplay());
+
+
+								flipFaces.Add(toFlip);
+								foreach( PVertex u in toFlip.getVerts()) {
+									flipVerts.Add (u);
 								}
+								toFlip.flipNormal();
+								notToFlip.setLayer(f.getLayer());
+								notToFlip.setNormal(f.getNormal());
+								Debug.Log ("=== AFTER === ");
+								Debug.Log ("toFlip Face: " + toFlip.ToString() + ", " + toFlip.getDisplay());
+								Debug.Log ("notToFlip Face: " + notToFlip.ToString() + ", " + notToFlip.getDisplay());
+
 								break;
 							}
 						}
@@ -151,16 +160,13 @@ public class Fold : MonoBehaviour {
 
 			foreach (PFace f in flipFaces) {
 				f.setLayer(++paper.maxLayer);
+//				Debug.Log ("Face: " + f.ToString());
+//				Debug.Log ("- Normal: " + f.getNormal());
 			}
+			// Need to do this here because it's a set
 			foreach (PVertex v in flipVerts) {
 				flip(v);
 			}
-			foreach (PFace f in flipFaces) {
-				foreach( PVertex v in f.getVerts()) {
-//					v.setY (v.getPos().y + (float) f.getLayer() * 0.1f);
-				}
-			}
-
 
 			// remove all the marked faces, replace with new faces
 			for (int i = faces.Count-1 ; i >= 0; i--) {
@@ -171,6 +177,7 @@ public class Fold : MonoBehaviour {
 			foreach (PFace f in newFaces) {
 				faces.Add (f);
 			}
+
 			paper.triangulateFaces();
 //
 //			if (paper.getFaces ().Count > 2) {
