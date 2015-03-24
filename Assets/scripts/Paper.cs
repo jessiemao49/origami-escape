@@ -22,6 +22,16 @@ public class Paper : MonoBehaviour {
 		triangulateFaces ();
 	}
 
+	public void Restart() {
+		faces = new System.Collections.Generic.List<PFace> ();
+		verts = new System.Collections.Generic.List<PVertex> ();
+		vcount = 0;
+		maxLayer = 0;
+		createSquare ();
+		front = true;
+		triangulateFaces ();
+	}
+
 	void Update () {
 		drawMeshOutline ();
 	}
@@ -145,6 +155,27 @@ public class Paper : MonoBehaviour {
 			back.setMesh (frontMesh);
 			filter.mesh = backMesh;
 		}
+
+		// Now join the two meshes together to pass into the mass collider
+		Mesh joinedMesh = new Mesh ();
+		foreach (Vector3 v in backVerts) {
+			frontVerts.Add (v);
+		}
+		foreach (int i in backIDs) {
+			frontIDs.Add (i + frontVertCount);
+		}
+		foreach (Vector3 uv in backUVs) {
+			frontUVs.Add (uv);
+		}
+		foreach(Vector3 norm in backNorms) {
+			frontNorms.Add (norm);
+		}
+		joinedMesh.vertices = frontVerts.ToArray();
+		joinedMesh.triangles = frontIDs.ToArray();
+		joinedMesh.uv = frontUVs.ToArray();
+		joinedMesh.normals = frontNorms.ToArray ();
+		joinedMesh.RecalculateBounds();
+		GetComponent<MeshCollider>().sharedMesh = frontMesh;
 	}
 
 	public void flipPaper() {

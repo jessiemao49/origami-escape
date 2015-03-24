@@ -49,13 +49,12 @@
      <Compile Include="Assets\scripts\Fold.cs" />
      <Compile Include="Assets\scripts\GUI_Button.cs" />
      <Compile Include="Assets\scripts\LayerComparator.cs" />
-     <Compile Include="Assets\scripts\MeshDeform.cs" />
      <Compile Include="Assets\scripts\PEdge.cs" />
      <Compile Include="Assets\scripts\PFace.cs" />
      <Compile Include="Assets\scripts\PVertex.cs" />
      <Compile Include="Assets\scripts\Paper.cs" />
-     <Compile Include="Assets\scripts\PaperFold.cs" />
      <Compile Include="Assets\scripts\Paper_Back.cs" />
+     <Compile Include="Assets\scripts\TargetShape.cs" />
      <Compile Include="Assets\scripts\Triangulator.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
