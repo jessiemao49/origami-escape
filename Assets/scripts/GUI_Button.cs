@@ -7,6 +7,9 @@ public class GUI_Button : MonoBehaviour {
 	public Paper paper;
 	public TargetShape target;
 	public Camera origamiCamera;
+	private bool showScore = false;
+	private string score = "";
+	private Rect windowRect;
 
 	void Start () {
 		paper = GetComponent<Paper> ();
@@ -14,6 +17,10 @@ public class GUI_Button : MonoBehaviour {
 
 	private void OnGUI() 
 	{
+
+		if (showScore) {
+			windowRect = GUI.Window(0,windowRect,ShowPopup,"");
+		}
 		if (GUI.Button (new Rect (15, 15, 100, 30), "Restart")) 
 		{
 			paper.Restart();
@@ -28,8 +35,16 @@ public class GUI_Button : MonoBehaviour {
 		}
 		if (GUI.Button (new Rect (15, 130, 100, 30), "Submit"))
 		{
-			Debug.Log (scoreCheck());
+			showScore = true;
+			score = ((int) (scoreCheck () * 100)).ToString () + "%";
+			windowRect = new Rect(Screen.width / 2 - 115, Screen.height / 2 - 100, 200, 100);
 		}
+	}
+	
+	void ShowPopup(int id){
+		GUILayout.Label ("\nYour score is: " + score);
+		if(GUILayout.Button("OK"))
+			showScore = false;
 	}
 
 	private float scoreCheck() {

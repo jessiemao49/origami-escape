@@ -175,7 +175,7 @@ public class Paper : MonoBehaviour {
 		joinedMesh.uv = frontUVs.ToArray();
 		joinedMesh.normals = frontNorms.ToArray ();
 		joinedMesh.RecalculateBounds();
-		GetComponent<MeshCollider>().sharedMesh = frontMesh;
+		GetComponent<MeshCollider>().sharedMesh = joinedMesh;
 	}
 
 	public void flipPaper() {
